@@ -17,7 +17,7 @@ void del_window(WINDOW* win) {
 }
 
 void header() {
-    printw("Welcome to ROBCO Industries (TM) Termlink\n");
+    printw("Welcome to ***\n");
     printw("Password required\n");
     printw("Attempts remaining: | | | |\n");
 }
