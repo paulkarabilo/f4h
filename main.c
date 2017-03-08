@@ -3,6 +3,19 @@
 #include <ncurses.h>
 #include <time.h>
 
+WINDOW* new_window(int h, int w, int y, int x) {
+    WINDOW* win = newwin(h, w, y, x);
+    box(win, 0, 0);
+    wrefresh(win);
+    return win;
+}
+
+void del_window(WINDOW* win) {
+    wborder(win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+    wrefresh(win);
+    delwin(win);
+}
+
 void header() {
     printw("Welcome to ROBCO Industries (TM) Termlink\n");
     printw("Password required\n");
