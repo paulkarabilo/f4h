@@ -5,7 +5,6 @@
 
 WINDOW* new_window(int h, int w, int y, int x) {
     WINDOW* win = newwin(h, w, y, x);
-    box(win, 0, 0);
     wrefresh(win);
     return win;
 }
@@ -16,14 +15,29 @@ void del_window(WINDOW* win) {
     delwin(win);
 }
 
-void header() {
-    printw("Welcome to ***\n");
-    printw("Password required\n");
-    printw("Attempts remaining: | | | |\n");
+void header(WINDOW* hdr) {
+    wprintw(hdr, "Welcome to ***\n");
+    wprintw(hdr, "Password required\n\n");
+    wprintw(hdr, "Attempts remaining: | | | |\n\n");
+    wrefresh(hdr);
 }
 
-void loop() {
-    int ch = getch();
+void addr(WINDOW* l, WINDOW* r) {
+    int a = 100 * (rand() %  100);
+    for (int i = 0; i < 16; i++) {
+        wprintw(l, "0X%04X", a);
+        a += 12;
+    }
+    for (int i = 0; i < 16; i++) {
+        wprintw(r, "0X%04X", a);
+        a += 12;
+    }
+    wrefresh(l);
+    wrefresh(r);
+}
+
+void loop(WINDOW* l, WINDOW* r) {
+    int ch = wgetch(l);
     while (ch != 27) {
         if (ch == KEY_RIGHT) {
             printw("right");
@@ -40,17 +54,48 @@ void loop() {
         }
         printw("\n");
         refresh();
-        ch = getch();
+        ch = wgetch(r);
     }
 }
 
+void randc(WINDOW* lc, WINDOW* rc) {
+    for (int i = 0; i < 12 * 16; i++) {
+        char c = rand() & 0x7F;
+        wprintw(lc, "%c", c);
+    }
+    for (int i = 0; i < 12 * 16; i++) {
+        char c = rand() & 0x7F;
+        wprintw(rc, "%c", c);
+    }
+    wrefresh(lc);
+    wrefresh(rc);
+}
+
 int main(int argc, char** argv) {
+    srand(time(NULL));
     initscr();
     raw();
     keypad(stdscr, TRUE);
     noecho();
-    header();
-    loop();
+
+    WINDOW* hdr = new_window(5, 80, 0, 0);
+    WINDOW* l = new_window(16, 6, 6, 0);
+    WINDOW* r = new_window(16, 6, 6, 21);
+    WINDOW* lc = new_window(16, 12, 6, 7);
+    WINDOW* rc = new_window(16, 12, 6, 28);
+    WINDOW* tty = new_window(21, 10, 0, 41);
+
+    header(hdr);
+    addr(l, r);
+    randc(lc, rc);
+    loop(l, r);
+
+    del_window(tty);
+    del_window(rc);
+    del_window(lc);
+    del_window(r);
+    del_window(l);
+    del_window(hdr);
     
     endwin();
     return (EXIT_SUCCESS);
