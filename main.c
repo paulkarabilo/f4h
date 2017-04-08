@@ -3,12 +3,14 @@
 #include <ncurses.h>
 #include <time.h>
 #include <string.h>
+#include "include/windows.h"
+
 #define BUF_LENGTH 384
 
 typedef struct {
     char* s;
     int len;
-    int is_word;
+    char is_word;
 } str;
 
 typedef struct {
@@ -69,18 +71,6 @@ void fill_buf(buf* b, char** strings, int size) {
             }
         }
     }
-}
-
-WINDOW* new_window(int h, int w, int y, int x) {
-    WINDOW* win = newwin(h, w, y, x);
-    wrefresh(win);
-    return win;
-}
-
-void del_window(WINDOW* win) {
-    wborder(win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-    wrefresh(win);
-    delwin(win);
 }
 
 void header(WINDOW* hdr) {
