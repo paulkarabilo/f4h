@@ -4,74 +4,13 @@
 #include <time.h>
 #include <string.h>
 #include "include/windows.h"
-
-#define BUF_LENGTH 384
-
-typedef struct {
-    char* s;
-    int len;
-    char is_word;
-} str;
-
-typedef struct {
-    str** cont;
-    int length;
-    int size;
-    int cursor;
-} buf;
+#include "include/buf.h"
 
 char* strings[] = {
     "TEST", "FILL", "BUFF", "DOES", "WANT",
     "BEEP", "WEED", "ALSO", "MUST", "WILL",
     "CONS", "WHAT", "WHEN", "COAT", "GOAT"
 };
-
-str* new_str(char* c, int is_word) {
-    str* res = malloc(sizeof(str));
-    res->s = malloc(strlen(c) + 1);
-    strcpy(res->s, c);
-    res->is_word = is_word;
-    return res;
-}
-
-void del_str(str* res) {
-    free(res->s);
-    free(res);
-}
-
-buf* new_buf(int length) {
-    buf* res = malloc(sizeof(buf));
-    res->size = 0;
-    res->cont = malloc(sizeof(str*));
-    res->length = 0;
-    res->cursor = 0;
-    return res;
-}
-
-void del_buf(buf* buf) {
-    for (int i = 0; i < buf->length; i++) {
-        free(buf->cont[i]);
-    }
-    free(buf->cont);
-    free(buf);
-}
-
-void fill_buf(buf* b, char** strings, int size) {
-    int c = 0;
-    while(b->length < BUF_LENGTH) {
-        b->size++;
-        b->cont = realloc(b->cont, sizeof(str*) * b->size);
-        if (BUF_LENGTH - b->length < 5) {
-            //rand string
-        } else {
-            if (rand() % 6 == 1) {
-                //something real;
-            } else {
-                //rand string
-            }
-        }
-    }
-}
 
 void header(WINDOW* hdr) {
     wprintw(hdr, "Welcome to ***\n");
