@@ -6,11 +6,7 @@
 #include "include/windows.h"
 #include "include/buf.h"
 
-char* strings[] = {
-    "TEST", "FILL", "BUFF", "DOES", "WANT",
-    "BEEP", "WEED", "ALSO", "MUST", "WILL",
-    "CONS", "WHAT", "WHEN", "COAT", "GOAT"
-};
+
 
 void header(WINDOW* hdr) {
     wprintw(hdr, "Welcome to ***\n");
@@ -55,7 +51,7 @@ void randc(WINDOW* lc, WINDOW* rc) {
     wrefresh(rc);
 }
 
-int main(int argc, char** argv) {
+int mainb(int argc, char** argv) {
     srand(time(NULL));
     initscr();
     raw();
