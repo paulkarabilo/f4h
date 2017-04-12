@@ -3,10 +3,11 @@
 #include <string.h>
 #include <stdio.h>
 
-char *rand_string(size_t size) {
+char* rand_string(size_t size) {
+    printf("SIZE %i ", size);
     char* s = malloc(size + 1);
     if (s) {
-         const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()|\?/><.,{}[]~";
+        const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()|\?/><.,{}[]~";
         if (size) {
             --size;
             for (size_t n = 0; n < size; n++) {
@@ -84,20 +85,31 @@ void print_buf(buf* b) {
 void fill_buf(buf* b, char** strings, int size) {
     while(b->length < BUF_LENGTH) {
         if (BUF_LENGTH - b->length < 5) {
-            printf("FIN ");
-            add_str_to_buf(b, rand_string(BUF_LENGTH - b->length + 1), 0);
+            char* s = rand_string(BUF_LENGTH - b->length + 1);
+            printf("FIN %s", s);
+            add_str_to_buf(b, s, 0);
+            free(s);
         } else {
             if (rand() % 6 == 1) {
                 printf("WORD ");
                 add_str_to_buf(b, strings[rand() % (int)(size - 1)], 1);
-                //something real;
             } else {
-                printf("RAND ");
-                add_str_to_buf(b, rand_string(1 + rand() % 5), 0);
-                //rand string
+                char* s = rand_string(2 + rand() % 5);
+                printf("RAND %s", s);
+                add_str_to_buf(b, s, 0);
+                free(s);
             }
         }
     }
+}
+
+void print_buf_to_win(buf* b, WINDOW* win, int w, int h, int offset, int len) {
+    int x = 0;
+    int y = 0;
+    int cursor = 0;
+    int selected = 0;
+    str* s = buf->cont[0];
+    
 }
 
 
