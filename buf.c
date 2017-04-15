@@ -3,8 +3,13 @@
 #include <string.h>
 #include <stdio.h>
 
-char* rand_string(size_t size) {
-    printf("SIZE %i ", size);
+char* strings_4[] = {
+    "TEST", "FILL", "BUFF", "DOES", "WANT",
+    "BEEP", "WEED", "ALSO", "MUST", "WILL",
+    "CONS", "WHAT", "WHEN", "COAT", "GOAT"
+};
+
+char* rand_string(int size) {
     char* s = malloc(size + 1);
     if (s) {
         const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()|\?/><.,{}[]~";
@@ -19,12 +24,6 @@ char* rand_string(size_t size) {
     }
     return s;
 }
-
-char* strings[] = {
-    "TEST", "FILL", "BUFF", "DOES", "WANT",
-    "BEEP", "WEED", "ALSO", "MUST", "WILL",
-    "CONS", "WHAT", "WHEN", "COAT", "GOAT"
-};
 
 str* new_str(char* c, int is_word) {
     str* res = malloc(sizeof(str));
@@ -59,7 +58,6 @@ void del_buf(buf* buf) {
 
 void add_str_to_buf(buf* b, char* s, int is_word) {
     b->size++;
-    printf("ADDING %s\n", s);
     b->cont = realloc(b->cont, sizeof(str*) * b->size);
     b->cont[b->size - 1] = new_str(s, is_word);
     b->length += b->cont[b->size - 1]->len;
@@ -86,16 +84,13 @@ void fill_buf(buf* b, char** strings, int size) {
     while(b->length < BUF_LENGTH) {
         if (BUF_LENGTH - b->length < 5) {
             char* s = rand_string(BUF_LENGTH - b->length + 1);
-            printf("FIN %s", s);
             add_str_to_buf(b, s, 0);
             free(s);
         } else {
             if (rand() % 6 == 1) {
-                printf("WORD ");
                 add_str_to_buf(b, strings[rand() % (int)(size - 1)], 1);
             } else {
                 char* s = rand_string(2 + rand() % 5);
-                printf("RAND %s", s);
                 add_str_to_buf(b, s, 0);
                 free(s);
             }
@@ -103,22 +98,38 @@ void fill_buf(buf* b, char** strings, int size) {
     }
 }
 
-void print_buf_to_win(buf* b, WINDOW* win, int w, int h, int offset, int len) {
-    int x = 0;
-    int y = 0;
+void buf_complexity(buf* b, char complexity) {
+    if (complexity == 4) {
+        fill_buf(b, strings_4, STRINGS_4_SIZE);
+    }
+}
+
+void print_buf_to_win(buf* b, WINDOW* win, int offset, int len) {
     int cursor = 0;
+    int string_cursor = 0;
     int selected = 0;
-    str* s = buf->cont[0];
-    
+    str* s = b->cont[cursor];
+    for (int i = 0; i < b->length; i++) {
+        if (i > offset && i < offset + len) {
+            wprintw(win, "%c", s->s[string_cursor]);
+            string_cursor++;
+            if (string_cursor >= s->len) {
+                if ((++cursor) > b->length) return;
+                s = b->cont[cursor];
+                string_cursor = 0;
+            }
+        }
+    }
+    wrefresh(win);
 }
 
 
-int main(int argc, char** argv) {
-    buf* b = new_buf(1);
-    fill_buf(b, strings, 15);
-    print_buf(b);
-    del_buf(b);
-    str* s = new_str("test", 1);
-    del_str(s);
-    return 0;
-}
+//int rmain(int argc, char** argv) {
+//    buf* b = new_buf(1);
+//    fill_buf(b, strings4, 15);
+//    print_buf(b);
+//    del_buf(b);
+//    str* s = new_str("test", 1);
+//    del_str(s);
+//    return 0;
+//}

@@ -6,8 +6,6 @@
 #include "include/windows.h"
 #include "include/buf.h"
 
-
-
 void header(WINDOW* hdr) {
     wprintw(hdr, "Welcome to ***\n");
     wprintw(hdr, "Password required\n\n");
@@ -51,13 +49,14 @@ void randc(WINDOW* lc, WINDOW* rc) {
     wrefresh(rc);
 }
 
-int mainb(int argc, char** argv) {
+int main(int argc, char** argv) {
     srand(time(NULL));
     initscr();
     raw();
     keypad(stdscr, TRUE);
     noecho();
-
+    buf* b = new_buf();
+    buf_complexity(b, 4);
     WINDOW* hdr = new_window(5, 80, 0, 0);
     WINDOW* l = new_window(16, 6, 6, 0);
     WINDOW* r = new_window(16, 6, 6, 21);
@@ -67,7 +66,9 @@ int mainb(int argc, char** argv) {
 
     header(hdr);
     addr(l, r);
-    randc(lc, rc);
+    print_buf_to_win(b, lc, 0, 182);
+    print_buf_to_win(b, rc, 183, 182);
+    //randc(lc, rc);
     loop(l, r);
 
     del_window(tty);
@@ -78,5 +79,6 @@ int mainb(int argc, char** argv) {
     del_window(hdr);
     
     endwin();
+    del_buf(b);
     return (EXIT_SUCCESS);
 }
