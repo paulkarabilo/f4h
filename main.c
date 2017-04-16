@@ -17,36 +17,20 @@ void addr(WINDOW* l, WINDOW* r) {
     int a = 100 * (rand() %  100);
     for (int i = 0; i < 16; i++) {
         wprintw(l, "0X%04X", a);
-        a += 12;
-    }
-    for (int i = 0; i < 16; i++) {
-        wprintw(r, "0X%04X", a);
+        wprintw(r, "0X%04X", a + 12 * 16);
         a += 12;
     }
     wrefresh(l);
     wrefresh(r);
 }
 
-void loop(WINDOW* l, WINDOW* r) {
-    int ch = wgetch(l);
+void loop(WINDOW* lc, WINDOW* rc) {
+    int ch = wgetch(lc);
     while (ch != 27) {
         printw("%c\n", ch);
         refresh();
-        ch = wgetch(r);
+        ch = wgetch(lc);
     }
-}
-
-void randc(WINDOW* lc, WINDOW* rc) {
-    for (int i = 0; i < 12 * 16; i++) {
-        char c = rand() & 0x7F;
-        wprintw(lc, "%c", c);
-    }
-    for (int i = 0; i < 12 * 16; i++) {
-        char c = rand() & 0x7F;
-        wprintw(rc, "%c", c);
-    }
-    wrefresh(lc);
-    wrefresh(rc);
 }
 
 int main(int argc, char** argv) {
@@ -66,9 +50,8 @@ int main(int argc, char** argv) {
 
     header(hdr);
     addr(l, r);
-    print_buf_to_win(b, lc, 0, 182);
-    print_buf_to_win(b, rc, 183, 182);
-    //randc(lc, rc);
+    print_buf_to_win(b, lc, 0, 192);
+    print_buf_to_win(b, rc, 192, 192);
     loop(l, r);
 
     del_window(tty);
