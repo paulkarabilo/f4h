@@ -12,7 +12,7 @@ char* strings_4[] = {
 char* rand_string(int size) {
     char* s = malloc(size + 1);
     if (s) {
-        const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()|\?/><.,{}[]~";
+        const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()|?/><.,{}[]~";
         if (size) {
             --size;
             for (size_t n = 0; n < size; n++) {
@@ -87,7 +87,7 @@ void fill_buf(buf* b, char** strings, int size) {
             add_str_to_buf(b, s, 0);
             free(s);
         } else {
-            if (rand() % 6 == 1) {
+            if (rand() % 5 == 0) {
                 add_str_to_buf(b, strings[rand() % (int)(size - 1)], 1);
             } else {
                 char* s = rand_string(2 + rand() % 5);
@@ -104,32 +104,36 @@ void buf_complexity(buf* b, char complexity) {
     }
 }
 
-void print_buf_to_win(buf* b, WINDOW* win, int offset, int len) {
+void print_buf_to_win(buf* b, int offset, int len) {
     int cursor = 0;
     int string_cursor = 0;
     int selected = 0;
     str* s = b->cont[cursor];
     for (int i = 0; i < b->length; i++) {
-        if (i > offset && i < offset + len) {
-            wprintw(win, "%c", s->s[string_cursor]);
-            string_cursor++;
-            if (string_cursor >= s->len) {
-                if ((++cursor) > b->length) return;
-                s = b->cont[cursor];
-                string_cursor = 0;
-            }
+        if (i >= offset && i < offset + len) {
+            printf("%c", s->s[string_cursor]);   
+        }
+        string_cursor++;
+        if (string_cursor >= s->len) {
+            if ((++cursor) > b->length) return;
+            s = b->cont[cursor];
+            string_cursor = 0;
         }
     }
-    wrefresh(win);
+    //wrefresh(win);
 }
 
 
-//int rmain(int argc, char** argv) {
-//    buf* b = new_buf(1);
-//    fill_buf(b, strings4, 15);
-//    print_buf(b);
-//    del_buf(b);
-//    str* s = new_str("test", 1);
-//    del_str(s);
-//    return 0;
-//}
+int main(int argc, char** argv) {
+    buf* b = new_buf(1);
+    buf_complexity(b, 4);
+    print_buf(b);
+    printf("\n\n\n");
+    print_buf_to_win(b, 0, 192);
+    printf("\n\n\n");
+    print_buf_to_win(b, 192, 192);
+    del_buf(b);
+    str* s = new_str("test", 1);
+    del_str(s);
+    return 0;
+}

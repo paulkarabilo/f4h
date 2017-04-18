@@ -33,7 +33,7 @@ void loop(WINDOW* lc, WINDOW* rc) {
     }
 }
 
-int main(int argc, char** argv) {
+int cmain(int argc, char** argv) {
     srand(time(NULL));
     initscr();
     raw();
