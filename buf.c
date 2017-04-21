@@ -1,6 +1,7 @@
 #include "include/buf.h"
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <stdio.h>
 
 char* strings_4[] = {
@@ -87,10 +88,10 @@ void fill_buf(buf* b, char** strings, int size) {
             add_str_to_buf(b, s, 0);
             free(s);
         } else {
-            if (rand() % 5 == 0) {
-                add_str_to_buf(b, strings[rand() % (int)(size - 1)], 1);
+            if ((rand() % 5) == 0) {
+                add_str_to_buf(b, strings[rand() % (size - 1)], 1);
             } else {
-                char* s = rand_string(2 + rand() % 5);
+                char* s = rand_string(2 + (rand() % 5));
                 add_str_to_buf(b, s, 0);
                 free(s);
             }
@@ -104,14 +105,14 @@ void buf_complexity(buf* b, char complexity) {
     }
 }
 
-void print_buf_to_win(buf* b, int offset, int len) {
+void print_buf_to_win(buf* b, WINDOW* win, int offset, int len) {
     int cursor = 0;
     int string_cursor = 0;
     int selected = 0;
     str* s = b->cont[cursor];
     for (int i = 0; i < b->length; i++) {
         if (i >= offset && i < offset + len) {
-            printf("%c", s->s[string_cursor]);   
+            wprintw(win, "%c", s->s[string_cursor]);   
         }
         string_cursor++;
         if (string_cursor >= s->len) {
@@ -120,20 +121,21 @@ void print_buf_to_win(buf* b, int offset, int len) {
             string_cursor = 0;
         }
     }
-    //wrefresh(win);
+    wrefresh(win);
 }
 
-
-int main(int argc, char** argv) {
-    buf* b = new_buf(1);
-    buf_complexity(b, 4);
-    print_buf(b);
-    printf("\n\n\n");
-    print_buf_to_win(b, 0, 192);
-    printf("\n\n\n");
-    print_buf_to_win(b, 192, 192);
-    del_buf(b);
-    str* s = new_str("test", 1);
-    del_str(s);
-    return 0;
-}
+//
+//int bmain(int argc, char** argv) {
+//    srand(time(NULL));
+//    buf* b = new_buf(1);
+//    buf_complexity(b, 4);
+//    print_buf(b);
+//    printf("\n\n\n");
+//    print_buf_to_win(b, 0, 192);
+//    printf("\n\n\n");
+//    print_buf_to_win(b, 192, 192);
+//    del_buf(b);
+//    str* s = new_str("test", 1);
+//    del_str(s);
+//    return 0;
+//}
