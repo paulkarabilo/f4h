@@ -5,7 +5,6 @@
 
 #define BUF_LENGTH 384
 
-
 #define STRINGS_4_SIZE 15
 
 typedef struct {
@@ -25,6 +24,7 @@ void print_buf_to_win(buf* b, WINDOW* win, int offset, int len);
 void buf_complexity(buf* b, char complexity);
 buf* new_buf();
 void del_buf(buf* b);
+void navigate_buffer(buf* b, char dir);
 
 #endif /* BUF_H */
 

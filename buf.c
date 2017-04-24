@@ -99,6 +99,24 @@ void fill_buf(buf* b, char** strings, int size) {
     }
 }
 
+int get_offset(buf* b) {
+    int c = 0;
+    for (int i = 0; i < b->size; i++) {
+        if (i == b->cursor) return c;
+        c += b->cont[i]->len;
+    }
+}
+
+void navigate_buffer(buf* b, char dir) {
+    b->cursor = b->cursor + dir;
+    if (b->cursor < 0) b->cursor = 0;
+    if (b->cursor >= b->size) b->cursor = b->size - 1;
+}
+
+void navigate_buffer_char(buf* b, int dir) {
+    int offset = get_offset(b);
+}
+
 void buf_complexity(buf* b, char complexity) {
     if (complexity == 4) {
         fill_buf(b, strings_4, STRINGS_4_SIZE);
@@ -108,7 +126,10 @@ void buf_complexity(buf* b, char complexity) {
 void print_buf_to_win(buf* b, WINDOW* win, int offset, int len) {
     int cursor = 0;
     int string_cursor = 0;
-    int selected = 0;
+    int selected = (b->cursor == 0) ? 1 : 0;
+    if (selected) {
+        wattron(win, COLOR_PAIR(1));
+    }
     str* s = b->cont[cursor];
     for (int i = 0; i < b->length; i++) {
         if (i >= offset && i < offset + len) {
@@ -117,6 +138,14 @@ void print_buf_to_win(buf* b, WINDOW* win, int offset, int len) {
         string_cursor++;
         if (string_cursor >= s->len) {
             if ((++cursor) > b->length) return;
+            if (cursor == b->cursor && !selected) {
+                selected = 1;
+                wattron(win, COLOR_PAIR(1));
+            }
+            if (cursor != b->cursor && selected) {
+                selected = 0;
+                wattroff(win, COLOR_PAIR(1));
+            }
             s = b->cont[cursor];
             string_cursor = 0;
         }
