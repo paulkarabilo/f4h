@@ -10,6 +10,12 @@ char* strings_4[] = {
     "CONS", "WHAT", "WHEN", "COAT", "GOAT"
 };
 
+char* strings_5[] = {
+    "SPEAK", "SHARD", "COULD", "WOULD", "GUARD",
+    "SPLIT", "SPEAR", "TREES", "POWER", "TABLE",
+    "CHAIR", "BREAK", "CRANE", "SPACE", "CAMEL"
+};
+
 char* rand_string(int size) {
     char* s = malloc(size + 1);
     if (s) {
@@ -120,6 +126,8 @@ void navigate_buffer_char(buf* b, int dir) {
 void buf_complexity(buf* b, char complexity) {
     if (complexity == 4) {
         fill_buf(b, strings_4, STRINGS_4_SIZE);
+    } else if (complexity == 5) {
+        fill_buf(b, strings_5, STRINGS_5_SIZE);
     }
 }
 

@@ -6,6 +6,7 @@
 #define BUF_LENGTH 384
 
 #define STRINGS_4_SIZE 15
+#define STRINGS_5_SIZE 15
 
 typedef struct {
     char* s;

@@ -31,8 +31,8 @@ void print_buf_to_windows(WINDOW* lc, WINDOW* rc, buf *b) {
     print_buf_to_win(b, rc, 192, 192);
 }
 
-void loop(WINDOW* lc, WINDOW* rc, buf* b) {
-    int ch = wgetch(lc);
+void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* hdr, buf* b) {
+    int ch = wgetch(tty);
     while (ch != 27) {
         switch(ch) {
             case KEY_LEFT:
@@ -43,10 +43,14 @@ void loop(WINDOW* lc, WINDOW* rc, buf* b) {
                 navigate_buffer(b, 1);
                 print_buf_to_windows(lc, rc, b);
                 break;
+            case KEY_UP:
+                break;
+            case KEY_DOWN:
+                break;
+            case KEY_ENTER:
+                break;
         }
-        wrefresh(lc);
-        wrefresh(rc);
-        ch = wgetch(lc);
+        ch = wgetch(tty);
     }
     printf("%i, \n", ch);
 }
@@ -71,12 +75,11 @@ int main(int argc, char** argv) {
     WINDOW* lc = new_window(16, 12, 6, 7);
     WINDOW* rc = new_window(16, 12, 6, 28);
     WINDOW* tty = new_window(21, 10, 0, 41);
-    keypad(lc, TRUE);
-    keypad(rc, TRUE);
+    keypad(tty, TRUE);
     header(hdr);
     addr(l, r);
     print_buf_to_windows(lc, rc, b);
-    loop(lc, rc, b);
+    loop(lc, rc, tty, hdr, b);
 
     del_window(tty);
     del_window(rc);
