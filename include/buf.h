@@ -26,6 +26,7 @@ void buf_complexity(buf* b, char complexity);
 buf* new_buf();
 void del_buf(buf* b);
 void navigate_buffer(buf* b, char dir);
+void navigate_buffer_char(buf* b, char dir);
 
 #endif /* BUF_H */
 

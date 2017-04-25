@@ -44,8 +44,12 @@ void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* hdr, buf* b) {
                 print_buf_to_windows(lc, rc, b);
                 break;
             case KEY_UP:
+                navigate_buffer_char(b, -12);
+                print_buf_to_windows(lc, rc, b);
                 break;
             case KEY_DOWN:
+                navigate_buffer_char(b, 12);
+                print_buf_to_windows(lc, rc, b);
                 break;
             case KEY_ENTER:
                 break;

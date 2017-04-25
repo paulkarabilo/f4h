@@ -119,7 +119,7 @@ void navigate_buffer(buf* b, char dir) {
     if (b->cursor >= b->size) b->cursor = b->size - 1;
 }
 
-void navigate_buffer_char(buf* b, int dir) {
+void navigate_buffer_char(buf* b, char dir) {
     int offset = get_offset(b);
 }
 
