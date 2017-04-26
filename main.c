@@ -24,9 +24,10 @@ void addr(WINDOW* l, WINDOW* r) {
     wrefresh(r);
 }
 
-void print_buf_to_windows(WINDOW* lc, WINDOW* rc, buf *b) {
+void print_buf_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, buf *b) {
     wclear(lc);
     wclear(rc);
+    print_current_to_tty(b, tty);
     print_buf_to_win(b, lc, 0, 192);
     print_buf_to_win(b, rc, 192, 192);
 }
@@ -37,19 +38,19 @@ void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* hdr, buf* b) {
         switch(ch) {
             case KEY_LEFT:
                 navigate_buffer(b, -1);
-                print_buf_to_windows(lc, rc, b);
+                print_buf_to_windows(lc, rc, tty, b);
                 break;
             case KEY_RIGHT:
                 navigate_buffer(b, 1);
-                print_buf_to_windows(lc, rc, b);
+                print_buf_to_windows(lc, rc, tty, b);
                 break;
             case KEY_UP:
                 navigate_buffer_char(b, -12);
-                print_buf_to_windows(lc, rc, b);
+                print_buf_to_windows(lc, rc, tty, b);
                 break;
             case KEY_DOWN:
                 navigate_buffer_char(b, 12);
-                print_buf_to_windows(lc, rc, b);
+                print_buf_to_windows(lc, rc, tty, b);
                 break;
             case KEY_ENTER:
                 break;
@@ -78,11 +79,11 @@ int main(int argc, char** argv) {
     WINDOW* r = new_window(16, 6, 6, 21);
     WINDOW* lc = new_window(16, 12, 6, 7);
     WINDOW* rc = new_window(16, 12, 6, 28);
-    WINDOW* tty = new_window(21, 10, 0, 41);
+    WINDOW* tty = new_window(1, 10, 21, 41);
     keypad(tty, TRUE);
     header(hdr);
     addr(l, r);
-    print_buf_to_windows(lc, rc, b);
+    print_buf_to_windows(lc, rc, tty, b);
     loop(lc, rc, tty, hdr, b);
 
     del_window(tty);

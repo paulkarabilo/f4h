@@ -131,6 +131,16 @@ void buf_complexity(buf* b, char complexity) {
     }
 }
 
+void print_current_to_tty(buf* b, WINDOW* win) {
+    str* s = b->cont[b->cursor];
+    wclear(win);
+    if (s->is_word) {
+        wprintw(win, "> %s", s->s);
+    } else {
+        wprintw(win, "> ");
+    }
+}
+
 void print_buf_to_win(buf* b, WINDOW* win, int offset, int len) {
     int cursor = 0;
     int string_cursor = 0;

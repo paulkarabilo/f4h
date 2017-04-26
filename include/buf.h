@@ -22,6 +22,7 @@ typedef struct {
 } buf;
 
 void print_buf_to_win(buf* b, WINDOW* win, int offset, int len);
+void print_current_to_tty(buf* b, WINDOW* win);
 void buf_complexity(buf* b, char complexity);
 buf* new_buf();
 void del_buf(buf* b);
