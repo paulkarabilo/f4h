@@ -32,7 +32,7 @@ void print_buf_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, buf *b) {
     print_buf_to_win(b, rc, 192, 192);
 }
 
-void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* hdr, buf* b) {
+void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, buf* b) {
     int ch = wgetch(tty);
     while (ch != 27) {
         switch(ch) {
@@ -53,6 +53,8 @@ void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* hdr, buf* b) {
                 print_buf_to_windows(lc, rc, tty, b);
                 break;
             case KEY_ENTER:
+                wprintw(log, "%s\n", b->cont[b->cursor]->s);
+                wrefresh(log);
                 break;
         }
         ch = wgetch(tty);
@@ -80,13 +82,15 @@ int main(int argc, char** argv) {
     WINDOW* lc = new_window(16, 12, 6, 7);
     WINDOW* rc = new_window(16, 12, 6, 28);
     WINDOW* tty = new_window(1, 10, 21, 41);
+    WINDOW* log = new_window(15, 10, 6, 41);
     keypad(tty, TRUE);
     header(hdr);
     addr(l, r);
     print_buf_to_windows(lc, rc, tty, b);
-    loop(lc, rc, tty, hdr, b);
+    loop(lc, rc, tty, log, hdr, b);
 
     del_window(tty);
+    del_window(log);
     del_window(rc);
     del_window(lc);
     del_window(r);
