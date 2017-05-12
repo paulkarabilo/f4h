@@ -46,8 +46,8 @@ void del_str(str* res) {
     free(res);
 }
 
-buf* new_buf() {
-    buf* res = malloc(sizeof(buf));
+word_buffer* new_buf() {
+    word_buffer* res = malloc(sizeof(word_buffer));
     res->size = 0;
     res->cont = malloc(sizeof(str*));
     res->length = 0;
@@ -55,7 +55,7 @@ buf* new_buf() {
     return res;
 }
 
-void del_buf(buf* buf) {
+void del_buf(word_buffer* buf) {
     for (int i = 0; i < buf->size; i++) {
         del_str(buf->cont[i]);
     }
@@ -63,7 +63,7 @@ void del_buf(buf* buf) {
     free(buf);
 }
 
-void add_str_to_buf(buf* b, char* s, int is_word) {
+void add_str_to_buf(word_buffer* b, char* s, int is_word) {
     b->size++;
     b->cont = realloc(b->cont, sizeof(str*) * b->size);
     b->cont[b->size - 1] = new_str(s, is_word);
@@ -78,7 +78,7 @@ void print_str(str* s) {
     }
 }
 
-void print_buf(buf* b) {
+void print_buf(word_buffer* b) {
     printf("Buffer <%p> (%i item(s)) \n", ((void *)b), b->size);
     for (int i = 0; i < b->size; i++) {
         printf("%i: ", i);
@@ -87,7 +87,7 @@ void print_buf(buf* b) {
     }
 }
 
-void fill_buf(buf* b, char** strings, int size) {
+void fill_buf(word_buffer* b, char** strings, int size) {
     while(b->length < BUF_LENGTH) {
         if (BUF_LENGTH - b->length < 5) {
             char* s = rand_string(BUF_LENGTH - b->length + 1);
@@ -105,7 +105,7 @@ void fill_buf(buf* b, char** strings, int size) {
     }
 }
 
-int get_offset(buf* b) {
+int get_offset(word_buffer* b) {
     int c = 0;
     for (int i = 0; i < b->size; i++) {
         if (i == b->cursor) return c;
@@ -113,17 +113,17 @@ int get_offset(buf* b) {
     }
 }
 
-void navigate_buffer(buf* b, char dir) {
+void navigate_buffer(word_buffer* b, char dir) {
     b->cursor = b->cursor + dir;
     if (b->cursor < 0) b->cursor = 0;
     if (b->cursor >= b->size) b->cursor = b->size - 1;
 }
 
-void navigate_buffer_char(buf* b, char dir) {
+void navigate_buffer_char(word_buffer* b, char dir) {
     int offset = get_offset(b);
 }
 
-void buf_complexity(buf* b, char complexity) {
+void buf_complexity(word_buffer* b, char complexity) {
     if (complexity == 4) {
         fill_buf(b, strings_4, STRINGS_4_SIZE);
     } else if (complexity == 5) {
@@ -131,7 +131,7 @@ void buf_complexity(buf* b, char complexity) {
     }
 }
 
-void print_current_to_tty(buf* b, WINDOW* win) {
+void print_current_to_tty(word_buffer* b, WINDOW* win) {
     str* s = b->cont[b->cursor];
     wclear(win);
     if (s->is_word) {
@@ -141,7 +141,7 @@ void print_current_to_tty(buf* b, WINDOW* win) {
     }
 }
 
-void print_buf_to_win(buf* b, WINDOW* win, int offset, int len) {
+void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len) {
     int cursor = 0;
     int string_cursor = 0;
     int selected = (b->cursor == 0) ? 1 : 0;

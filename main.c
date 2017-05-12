@@ -24,7 +24,7 @@ void addr(WINDOW* l, WINDOW* r) {
     wrefresh(r);
 }
 
-void print_buf_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, buf *b) {
+void print_buf_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, word_buffer *b) {
     wclear(lc);
     wclear(rc);
     print_current_to_tty(b, tty);
@@ -32,7 +32,19 @@ void print_buf_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, buf *b) {
     print_buf_to_win(b, rc, 192, 192);
 }
 
-void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, buf* b) {
+void print_log(WINDOW* log, char* word, char matches) {
+    wprintw(log, "%s\n", word);
+    if (matches) {
+        wprintw(log, "Password accepted\n");
+    } else {
+        wprintw(log, "Password invalid\n");
+        wprintw(log, "Matches 3/7\n");
+        wprintw(log, "3 attempts remaining\n");
+    }
+    wrefresh(log);
+}
+
+void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, word_buffer* b) {
     int ch = wgetch(tty);
     while (ch != 27) {
         switch(ch) {
@@ -52,14 +64,13 @@ void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, buf* b)
                 navigate_buffer_char(b, 12);
                 print_buf_to_windows(lc, rc, tty, b);
                 break;
-            case KEY_ENTER:
+            case 10: //Enter key only works like this
                 wprintw(log, "%s\n", b->cont[b->cursor]->s);
                 wrefresh(log);
                 break;
         }
         ch = wgetch(tty);
     }
-    printf("%i, \n", ch);
 }
 
 int main(int argc, char** argv) {
@@ -74,7 +85,7 @@ int main(int argc, char** argv) {
     start_color();
     init_pair(1, COLOR_BLACK, COLOR_GREEN);
     keypad(stdscr, TRUE);
-    buf* b = new_buf();
+    word_buffer* b = new_buf();
     buf_complexity(b, 4);
     WINDOW* hdr = new_window(5, 80, 0, 0);
     WINDOW* l = new_window(16, 6, 6, 0);

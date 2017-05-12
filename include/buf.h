@@ -19,15 +19,15 @@ typedef struct {
     int length;
     int size;
     int cursor;
-} buf;
+} word_buffer;
 
-void print_buf_to_win(buf* b, WINDOW* win, int offset, int len);
-void print_current_to_tty(buf* b, WINDOW* win);
-void buf_complexity(buf* b, char complexity);
-buf* new_buf();
-void del_buf(buf* b);
-void navigate_buffer(buf* b, char dir);
-void navigate_buffer_char(buf* b, char dir);
+void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len);
+void print_current_to_tty(word_buffer* b, WINDOW* win);
+void buf_complexity(word_buffer* b, char complexity);
+word_buffer* new_buf();
+void del_buf(word_buffer* b);
+void navigate_buffer(word_buffer* b, char dir);
+void navigate_buffer_char(word_buffer* b, char dir);
 
 #endif /* BUF_H */
 
