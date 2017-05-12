@@ -70,23 +70,6 @@ void add_str_to_buf(word_buffer* b, char* s, int is_word) {
     b->length += b->cont[b->size - 1]->len;
 }
 
-void print_str(str* s) {
-    if (s->is_word) {
-        printf("[%s]", s->s);
-    } else {
-        printf("%s", s->s);
-    }
-}
-
-void print_buf(word_buffer* b) {
-    printf("Buffer <%p> (%i item(s)) \n", ((void *)b), b->size);
-    for (int i = 0; i < b->size; i++) {
-        printf("%i: ", i);
-        print_str(b->cont[i]);
-        printf("\n");
-    }
-}
-
 void fill_buf(word_buffer* b, char** strings, int size) {
     while(b->length < BUF_LENGTH) {
         if (BUF_LENGTH - b->length < 5) {
@@ -170,19 +153,3 @@ void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len) {
     }
     wrefresh(win);
 }
-
-//
-//int bmain(int argc, char** argv) {
-//    srand(time(NULL));
-//    buf* b = new_buf(1);
-//    buf_complexity(b, 4);
-//    print_buf(b);
-//    printf("\n\n\n");
-//    print_buf_to_win(b, 0, 192);
-//    printf("\n\n\n");
-//    print_buf_to_win(b, 192, 192);
-//    del_buf(b);
-//    str* s = new_str("test", 1);
-//    del_str(s);
-//    return 0;
-//}
