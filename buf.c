@@ -59,6 +59,9 @@ void del_buf(word_buffer* buf) {
     for (int i = 0; i < buf->size; i++) {
         del_str(buf->cont[i]);
     }
+    if (buf->target != NULL) {
+        del_str(buf->target);
+    }
     free(buf->cont);
     free(buf);
 }
@@ -70,15 +73,46 @@ void add_str_to_buf(word_buffer* b, char* s, int is_word) {
     b->length += b->cont[b->size - 1]->len;
 }
 
+char** shuffle_strings(char** strings, size_t size) {
+    char** shuffled = malloc(sizeof(char*) * size);
+    size_t i = 0;
+    for(; i < size; i++) {
+        shuffled[i] = malloc(sizeof(char));
+        strcpy(shuffled[i], strings[i]);
+    }
+    for (i = 0; i < size - 1; i++) {
+        size_t j = i + rand() / (RAND_MAX / (size - i) + 1);
+        char* t = shuffled[j];
+        shuffled[j] = shuffled[i];
+        shuffled[i] = t;
+    }
+    return shuffled;
+}
+
+void set_target_word(word_buffer* b, char* target) {
+    b->target = new_str(target, 1);
+}
+
+void del_shuffled_strings(char** strings, int size) {
+    for (unsigned int i = 0; i < size; i++) {
+        free(strings[i]);
+    }
+    free(strings);
+}
+
+
 void fill_buf(word_buffer* b, char** strings, int size) {
+    char** shuffled = shuffle_strings(strings, size);
+    int cursor = 0;
     while(b->length < BUF_LENGTH) {
         if (BUF_LENGTH - b->length < 5) {
             char* s = rand_string(BUF_LENGTH - b->length + 1);
             add_str_to_buf(b, s, 0);
             free(s);
         } else {
-            if ((rand() % 5) == 0) {
-                add_str_to_buf(b, strings[rand() % (size - 1)], 1);
+            if ((cursor < size - 1) && (rand() % 5) == 0) {
+                cursor++;
+                add_str_to_buf(b, shuffled[cursor], 1);
             } else {
                 char* s = rand_string(2 + (rand() % 5));
                 add_str_to_buf(b, s, 0);
@@ -86,6 +120,8 @@ void fill_buf(word_buffer* b, char** strings, int size) {
             }
         }
     }
+    set_target_word(b, shuffled[rand() % cursor]);
+    del_shuffled_strings(shuffled, size);
 }
 
 int get_offset(word_buffer* b) {

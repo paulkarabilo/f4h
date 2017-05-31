@@ -16,6 +16,7 @@ typedef struct {
 
 typedef struct {
     str** cont;
+    str* target;
     int length;
     int size;
     int cursor;
