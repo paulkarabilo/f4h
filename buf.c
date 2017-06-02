@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+#include <ctype.h>
 
 char* strings_4[] = {
     "TEST", "FILL", "BUFF", "DOES", "WANT",
@@ -53,6 +54,19 @@ word_buffer* new_buf() {
     res->length = 0;
     res->cursor = 0;
     return res;
+}
+
+int get_str_diff(str* s1, str* s2) {
+    if (s1->len != s2->len) {
+        return -1;
+    }
+    int matches = 0;
+    for (int i = 0; i < s1->len; i++) {
+        if (tolower(s1->s[i]) == tolower(s2->s[i])) {
+            matches++;
+        }
+    }
+    return s1->len - matches;
 }
 
 void del_buf(word_buffer* buf) {

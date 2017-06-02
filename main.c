@@ -44,6 +44,10 @@ void print_log(WINDOW* log, char* word, char matches) {
     wrefresh(log);
 }
 
+int check_guess(word_buffer* b) {
+    return 0;
+}
+
 void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, word_buffer* b) {
     int ch = wgetch(tty);
     while (ch != 27) {
