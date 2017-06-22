@@ -17,6 +17,9 @@ char* strings_5[] = {
     "CHAIR", "BREAK", "CRANE", "SPACE", "CAMEL"
 };
 
+/*
+ * Returns string of random characters of a given size
+*/
 char* rand_string(int size) {
     char* s = malloc(size + 1);
     if (s) {
@@ -56,6 +59,9 @@ word_buffer* new_buf() {
     return res;
 }
 
+/*
+ * Retuns amount of chars that are different between 2 strings
+ */
 int get_str_diff(str* s1, str* s2) {
     if (s1->len != s2->len) {
         return -1;
@@ -144,6 +150,7 @@ int get_offset(word_buffer* b) {
         if (i == b->cursor) return c;
         c += b->cont[i]->len;
     }
+    return c;
 }
 
 void navigate_buffer(word_buffer* b, char dir) {
@@ -154,6 +161,18 @@ void navigate_buffer(word_buffer* b, char dir) {
 
 void navigate_buffer_char(word_buffer* b, char dir) {
     int offset = get_offset(b);
+    str* current = b->cont[b->cursor];
+    uint8_t local_cursor = 0;
+    while (b->cursor <= b->size && dir != 0) {
+        dir = dir + (dir > 0 ? -1 : +1);
+        local_cursor += 1;
+        if (local_cursor > current->len) {
+            local_cursor = 0;
+            b->cursor = b->cursor + (dir > 0 ? -1 : +1);
+            if (b->cursor < 0) b->cursor = 0;
+            if (b->cursor >= b->size) b->cursor = b->size - 1;
+        }
+    }
 }
 
 void buf_complexity(word_buffer* b, char complexity) {
@@ -174,6 +193,10 @@ void print_current_to_tty(word_buffer* b, WINDOW* win) {
     }
 }
 
+/*
+ * Prints part of word buffer (starting at given offset, of given length)
+ * to ncurses window
+ */
 void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len) {
     int cursor = 0;
     int string_cursor = 0;

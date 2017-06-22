@@ -83,10 +83,12 @@ void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, word_bu
                 print_buf_to_windows(lc, rc, tty, b);
                 break;
             case 10: //Enter key only works like this
-                wprintw(log, "%s\n", b->cont[b->cursor]->s);
-                attempts--;
-                header(hdr, attempts);
-                wrefresh(log);
+                if (b->cont[b->cursor]->is_word) {
+                    wprintw(log, "%s\n", b->cont[b->cursor]->s);
+                    attempts--;
+                    header(hdr, attempts);
+                    wrefresh(log);
+                }
                 break;
         }
         ch = wgetch(tty);
