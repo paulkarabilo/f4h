@@ -6,10 +6,22 @@
 #include "include/windows.h"
 #include "include/buf.h"
 
-void header(WINDOW* hdr) {
+void header(WINDOW* hdr, int attempts) {
+    wclear(hdr);
     wprintw(hdr, "Welcome to ***\n");
     wprintw(hdr, "Password required\n\n");
-    wprintw(hdr, "Attempts remaining: | | | |\n\n");
+    wprintw(hdr, "Attempts remaining: ");
+    while (attempts--) {
+        wprintw(hdr, "| ");
+    } 
+    wprintw(hdr, "\n\n");
+    wrefresh(hdr);
+}
+
+void header_game_over(WINDOW* hdr) {
+    wclear(hdr);
+    wprintw(hdr, "GAME OVER\n");
+    wprintw(hdr, "Press any button to exit\n");
     wrefresh(hdr);
 }
 
@@ -49,8 +61,10 @@ int check_guess(word_buffer* b) {
 }
 
 void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, word_buffer* b) {
+    int attempts = 4;
+    header(hdr, attempts);
     int ch = wgetch(tty);
-    while (ch != 27) {
+    while (ch != 27 && attempts > 0) {
         switch(ch) {
             case KEY_LEFT:
                 navigate_buffer(b, -1);
@@ -70,9 +84,15 @@ void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, word_bu
                 break;
             case 10: //Enter key only works like this
                 wprintw(log, "%s\n", b->cont[b->cursor]->s);
+                attempts--;
+                header(hdr, attempts);
                 wrefresh(log);
                 break;
         }
+        ch = wgetch(tty);
+    }
+    if (attempts == 0) {
+        header_game_over(hdr);
         ch = wgetch(tty);
     }
 }
@@ -99,11 +119,9 @@ int main(int argc, char** argv) {
     WINDOW* tty = new_window(1, 10, 21, 41);
     WINDOW* log = new_window(15, 10, 6, 41);
     keypad(tty, TRUE);
-    header(hdr);
     addr(l, r);
     print_buf_to_windows(lc, rc, tty, b);
     loop(lc, rc, tty, log, hdr, b);
-
     del_window(tty);
     del_window(log);
     del_window(rc);
