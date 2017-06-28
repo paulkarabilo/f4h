@@ -144,37 +144,48 @@ void fill_buf(word_buffer* b, char** strings, int size) {
     del_shuffled_strings(shuffled, size);
 }
 
-int get_offset(word_buffer* b) {
-    int c = 0;
-    for (int i = 0; i < b->size; i++) {
-        if (i == b->cursor) return c;
-        c += b->cont[i]->len;
-    }
-    return c;
-}
-
-void navigate_buffer(word_buffer* b, char dir) {
-    b->cursor = b->cursor + dir;
+/**
+ * Make sure that buffer cursor stays inside buffer
+ */
+void clamp_buffer_cursor(word_buffer* b) {
     if (b->cursor < 0) b->cursor = 0;
     if (b->cursor >= b->size) b->cursor = b->size - 1;
 }
 
-void navigate_buffer_char(word_buffer* b, char dir) {
-    int offset = get_offset(b);
-    str* current = b->cont[b->cursor];
-    uint8_t local_cursor = 0;
-    while (b->cursor <= b->size && dir != 0) {
-        dir = dir + (dir > 0 ? -1 : +1);
-        local_cursor += 1;
-        if (local_cursor > current->len) {
-            local_cursor = 0;
-            b->cursor = b->cursor + (dir > 0 ? -1 : +1);
-            if (b->cursor < 0) b->cursor = 0;
-            if (b->cursor >= b->size) b->cursor = b->size - 1;
-        }
-    }
+/**
+ * Simple buffer navigation, 1 word forward or backward
+ */
+void navigate_buffer(word_buffer* b, char dir) {
+    b->cursor = b->cursor + dir;
+    clamp_buffer_cursor(b);
 }
 
+/**
+ * Navigate buffer forward or backward certain amount of characters
+ */
+void navigate_buffer_char(word_buffer* b, char dir, WINDOW* log) {
+    str* current = b->cont[b->cursor];
+    uint8_t local_cursor = 0;
+    wclear(log);
+    while (dir != 0) {
+        if (local_cursor >= current->len) {
+            wprintw(log, "move next\n");
+            local_cursor = 0;
+            b->cursor = b->cursor + (dir > 0 ? -1 : 1);
+            clamp_buffer_cursor(b);
+        }
+        local_cursor += 1;
+        dir = dir + (dir > 0 ? -1 : 1);
+        wprintw(log, "%i, %c\n", local_cursor, dir);
+    }
+    wrefresh(log);
+}
+
+/**
+ * Helper method to create buffer of given complexity
+ * from predefined list of strings
+ * (complexity simply means length of word in buffer)
+ */
 void buf_complexity(word_buffer* b, char complexity) {
     if (complexity == 4) {
         fill_buf(b, strings_4, STRINGS_4_SIZE);

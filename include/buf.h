@@ -28,7 +28,7 @@ void buf_complexity(word_buffer* b, char complexity);
 word_buffer* new_buf();
 void del_buf(word_buffer* b);
 void navigate_buffer(word_buffer* b, char dir);
-void navigate_buffer_char(word_buffer* b, char dir);
+void navigate_buffer_char(word_buffer* b, char dir, WINDOW* log);
 int get_str_diff(str* s1, str* s2);
 
 #endif /* BUF_H */

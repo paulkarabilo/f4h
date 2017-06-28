@@ -75,11 +75,11 @@ void loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, word_bu
                 print_buf_to_windows(lc, rc, tty, b);
                 break;
             case KEY_UP:
-                navigate_buffer_char(b, -12);
+                navigate_buffer_char(b, -12, log);
                 print_buf_to_windows(lc, rc, tty, b);
                 break;
             case KEY_DOWN:
-                navigate_buffer_char(b, 12);
+                navigate_buffer_char(b, 12, log);
                 print_buf_to_windows(lc, rc, tty, b);
                 break;
             case 10: //Enter key only works like this
