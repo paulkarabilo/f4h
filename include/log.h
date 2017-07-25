@@ -1,13 +1,23 @@
+#ifndef BUF_H
+#define BUF_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "windows.h"
 
 typedef struct {
     WINDOW* win;
     char** strings;
-    u_int8_t size;
+    size_t size;
     int width;
     int height;
 } log;
 
 log* new_log(int h, int w, int y, int x);
-void del_log(log* l);
-void str2log(log* l, char* str);
+void delete_log(log* l);
+void add_string_to_log(log* l, char* str);
+void render_log(log* l);
+
+#endif

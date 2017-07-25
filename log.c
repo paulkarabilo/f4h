@@ -10,7 +10,7 @@ log* new_log(int h, int w, int y, int x) {
     return l;
 }
 
-void del_log(log* l) {
+void delete_log(log* l) {
     for (int i = 0; i < l->size; i++) {
         free(l->strings[i]);
     }
@@ -19,6 +19,22 @@ void del_log(log* l) {
     free(l);
 }
 
-void str2log(log* l, char* str) {
-    
+void add_string_to_log(log* l, char* str) {
+    char* s = malloc(strlen(str) + 1);
+    l->size++;
+    l->strings = realloc(l->strings, sizeof(char*) * l->size);
+    strcpy(s, str);
+    l->strings[l->size - 1] = s;
+}
+
+void render_log(log* l) {
+    uint8_t nrows = 0;
+    uint8_t i;
+    for (i = 0; i < l->size; i++) {
+        nrows += strlen(l->strings[i]) / l->width;
+    }
+    wmove(l->win, nrows, 0);
+    for (i = 0; i < l->size; i++) {
+        wprintw(l->win, l->strings[i]);
+    }
 }
