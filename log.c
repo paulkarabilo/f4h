@@ -30,6 +30,7 @@ void add_string_to_log(log* l, char* str) {
 void render_log(log* l) {
     uint8_t nrows = 0;
     uint8_t i;
+    wclear(l->win);
     for (i = 0; i < l->size; i++) {
         nrows += strlen(l->strings[i]) / l->width;
     }
@@ -37,4 +38,5 @@ void render_log(log* l) {
     for (i = 0; i < l->size; i++) {
         wprintw(l->win, l->strings[i]);
     }
+    wrefresh(l->win);
 }
