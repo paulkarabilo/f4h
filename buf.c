@@ -165,18 +165,18 @@ void navigate_buffer(word_buffer* b, char dir) {
  */
 void navigate_buffer_char(word_buffer* b, char dir, WINDOW* log) {
     str* current = b->cont[b->cursor];
-    uint8_t local_cursor = 0;
+    uint8_t _cursor = 0;
     wclear(log);
     while (dir != 0) {
-        if (local_cursor >= current->len) {
+        if (_cursor >= current->len) {
             wprintw(log, "move next\n");
-            local_cursor = 0;
-            b->cursor = b->cursor + (dir > 0 ? -1 : 1);
+            _cursor = 0;
+            b->cursor = b->cursor + (dir < 0 ? -1 : 1);
             clamp_buffer_cursor(b);
         }
-        local_cursor += 1;
+        _cursor += 1;
         dir = dir + (dir > 0 ? -1 : 1);
-        wprintw(log, "%i, %c\n", local_cursor, dir);
+        wprintw(log, "%i, %c\n", _cursor, dir);
     }
     wrefresh(log);
 }
