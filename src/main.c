@@ -3,9 +3,9 @@
 #include <ncurses.h>
 #include <time.h>
 #include <string.h>
-#include "include/windows.h"
-#include "include/buf.h"
-#include "include/log.h"
+#include "../include/windows.h"
+#include "../include/buf.h"
+#include "../include/log.h"
 
 void print_header(WINDOW* hdr, int attempts) {
     wclear(hdr);

@@ -1,4 +1,4 @@
-#include "include/log.h"
+#include "../include/log.h"
 
 log_window* new_log(int h, int w, int y, int x) {
     log_window* l = malloc(sizeof(log_window));

@@ -1,4 +1,4 @@
-#include "include/buf.h"
+#include "../include/buf.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
