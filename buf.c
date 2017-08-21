@@ -121,7 +121,7 @@ void del_shuffled_strings(char** strings, int size) {
 }
 
 
-void fill_buf(word_buffer* b, char** strings, int size) {
+void fill_buf(word_buffer* b, char** strings, int size, short complexity) {
     char** shuffled = shuffle_strings(strings, size);
     int cursor = 0;
     while(b->length < BUF_LENGTH) {
@@ -140,6 +140,7 @@ void fill_buf(word_buffer* b, char** strings, int size) {
             }
         }
     }
+    b->complexity = complexity;
     set_target_word(b, shuffled[rand() % cursor]);
     del_shuffled_strings(shuffled, size);
 }
@@ -163,22 +164,18 @@ void navigate_buffer(word_buffer* b, char dir) {
 /**
  * Navigate buffer forward or backward certain amount of characters
  */
-void navigate_buffer_char(word_buffer* b, char dir, WINDOW* log) {
+void navigate_buffer_char(word_buffer* b, char dir) {
     str* current = b->cont[b->cursor];
     uint8_t _cursor = 0;
-    wclear(log);
     while (dir != 0) {
         if (_cursor >= current->len) {
-            wprintw(log, "move next\n");
             _cursor = 0;
             b->cursor = b->cursor + (dir < 0 ? -1 : 1);
             clamp_buffer_cursor(b);
         }
         _cursor += 1;
         dir = dir + (dir > 0 ? -1 : 1);
-        wprintw(log, "%i, %c\n", _cursor, dir);
     }
-    wrefresh(log);
 }
 
 /**
@@ -186,11 +183,11 @@ void navigate_buffer_char(word_buffer* b, char dir, WINDOW* log) {
  * from predefined list of strings
  * (complexity simply means length of word in buffer)
  */
-void buf_complexity(word_buffer* b, char complexity) {
+void buf_complexity(word_buffer* b, short complexity) {
     if (complexity == 4) {
-        fill_buf(b, strings_4, STRINGS_4_SIZE);
+        fill_buf(b, strings_4, STRINGS_4_SIZE, complexity);
     } else if (complexity == 5) {
-        fill_buf(b, strings_5, STRINGS_5_SIZE);
+        fill_buf(b, strings_5, STRINGS_5_SIZE, complexity);
     }
 }
 

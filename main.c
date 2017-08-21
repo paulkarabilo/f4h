@@ -5,6 +5,7 @@
 #include <string.h>
 #include "include/windows.h"
 #include "include/buf.h"
+#include "include/log.h"
 
 void print_header(WINDOW* hdr, int attempts) {
     wclear(hdr);
@@ -44,23 +45,24 @@ void print_buffer_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, word_buffer *b
     print_buf_to_win(b, rc, 192, 192);
 }
 
-void print_log(WINDOW* log, char* word, char matches) {
-    wprintw(log, "%s\n", word);
-    if (matches) {
-        wprintw(log, "Password accepted\n");
+int check_guess(word_buffer* b, log_window *l, int attempts) {
+    int diff = get_str_diff(b->target, b->cont[b->cursor]);
+    add_string_to_log(l, b->cont[b->cursor]->s);
+    if (diff == 0) {
+        add_string_to_log(l, "Entry OK!");
+        render_log(l);
+        return 1;
     } else {
-        wprintw(log, "Password invalid\n");
-        wprintw(log, "Matches 3/7\n");
-        wprintw(log, "3 attempts remaining\n");
+        char match[12];
+        add_string_to_log(l, "Entry denied");
+        snprintf(match, 12, "%d/%d correct", b->complexity - diff, b->complexity);
+        add_string_to_log(l, match);
+        render_log(l);
+        return 0;
     }
-    wrefresh(log);
 }
 
-int check_guess(word_buffer* b) {
-    return 0;
-}
-
-void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, word_buffer* b) {
+void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, log_window* game_log, WINDOW* hdr, word_buffer* b) {
     int attempts = 4;
     print_header(hdr, attempts);
     int ch = wgetch(tty);
@@ -74,20 +76,22 @@ void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, WINDOW* log, WINDOW* hdr, wo
                 navigate_buffer(b, 1);
                 print_buffer_to_windows(lc, rc, tty, b);
                 break;
+            /*
             case KEY_UP:
-                navigate_buffer_char(b, -12, log);
+                navigate_buffer_char(b, -12);
                 print_buffer_to_windows(lc, rc, tty, b);
                 break;
             case KEY_DOWN:
-                navigate_buffer_char(b, 12, log);
+                navigate_buffer_char(b, 12);
                 print_buffer_to_windows(lc, rc, tty, b);
                 break;
+            */
             case 10: //Enter key only works like this
                 if (b->cont[b->cursor]->is_word) {
-                    wprintw(log, "%s\n", b->cont[b->cursor]->s);
-                    attempts--;
-                    print_header(hdr, attempts);
-                    wrefresh(log);
+                    if (!check_guess(b, game_log, attempts)) {
+                        attempts--;
+                        print_header(hdr, attempts);
+                    }
                 }
                 break;
         }
@@ -119,13 +123,14 @@ int main(int argc, char** argv) {
     WINDOW* lc = new_window(16, 12, 6, 7);
     WINDOW* rc = new_window(16, 12, 6, 28);
     WINDOW* tty = new_window(1, 10, 21, 41);
-    WINDOW* log = new_window(15, 10, 6, 41);
+    //WINDOW* log = new_window(15, 10, 6, 41);
+    log_window* game_log = new_log(15, 12, 6, 41);
     keypad(tty, TRUE);
     print_row_hex_addresses(l, r);
     print_buffer_to_windows(lc, rc, tty, b);
-    main_loop(lc, rc, tty, log, hdr, b);
+    main_loop(lc, rc, tty, game_log, hdr, b);
+    delete_log(game_log);
     del_window(tty);
-    del_window(log);
     del_window(rc);
     del_window(lc);
     del_window(r);
