@@ -172,6 +172,7 @@ void navigate_buffer_char(word_buffer* b, char dir) {
             _cursor = 0;
             b->cursor = b->cursor + (dir < 0 ? -1 : 1);
             clamp_buffer_cursor(b);
+            current = b->cont[b->cursor];
         }
         _cursor += 1;
         dir = dir + (dir > 0 ? -1 : 1);

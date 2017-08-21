@@ -76,22 +76,19 @@ void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, log_window* game_log, WINDOW
                 navigate_buffer(b, 1);
                 print_buffer_to_windows(lc, rc, tty, b);
                 break;
-            /*
             case KEY_UP:
-                navigate_buffer_char(b, -12);
+                navigate_buffer_char(b, -14);
                 print_buffer_to_windows(lc, rc, tty, b);
                 break;
             case KEY_DOWN:
-                navigate_buffer_char(b, 12);
+                navigate_buffer_char(b, 14);
                 print_buffer_to_windows(lc, rc, tty, b);
                 break;
-            */
             case 10: //Enter key only works like this
                 if (b->cont[b->cursor]->is_word) {
-                    if (!check_guess(b, game_log, attempts)) {
-                        attempts--;
-                        print_header(hdr, attempts);
-                    }
+                    check_guess(b, game_log, attempts);
+                    attempts--;
+                    print_header(hdr, attempts);
                 }
                 break;
         }

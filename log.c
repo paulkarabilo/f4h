@@ -19,6 +19,9 @@ void delete_log(log_window* l) {
     free(l);
 }
 
+/**
+ * Add single string to log (without screen refresh)
+ */
 void add_string_to_log(log_window* l, char* str) {
     char* s = malloc(strlen(str) + 1);
     l->size++;
@@ -27,24 +30,21 @@ void add_string_to_log(log_window* l, char* str) {
     l->strings[l->size - 1] = s;
 }
 
+/**
+ * Render all strings from log to screen
+ * Text should be aligned to bottom
+ */
 void render_log(log_window* l) {
     uint8_t nrows = 0;
     uint8_t i;
     wclear(l->win);
     for (i = 0; i < l->size; i++) {
-        char* s = l->strings[i];
-        size_t len = strlen(s);
-        int rows = len / l->width;
-        if (rows == 0) rows = 1;
-        nrows += rows;
+        nrows += (strlen(l->strings[i]) / l->width) || 1;
     }
     wmove(l->win, l->height - nrows, 0);
     for (i = 0; i < l->size; i++) {
-        char* s = l->strings[i];
-        size_t len = strlen(s);
-        int mod = len % l->width;
         char* fmt;
-        if (mod == 0) {
+        if ((strlen(l->strings[i]) % l->width) == 0) {
             fmt = "%s";
         } else {
             fmt = "%s\n";
