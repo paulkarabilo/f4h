@@ -12,6 +12,7 @@ typedef struct {
     char* s;
     int len;
     char is_word;
+    short was_selected;
 } str;
 
 typedef struct {

@@ -47,6 +47,7 @@ void print_buffer_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, word_buffer *b
 
 int check_guess(word_buffer* b, log_window *l, int attempts) {
     int diff = get_str_diff(b->target, b->cont[b->cursor]);
+    b->cont[b->cursor]->was_selected = 1;
     add_string_to_log(l, b->cont[b->cursor]->s);
     if (diff == 0) {
         add_string_to_log(l, "Entry OK!");
@@ -85,7 +86,7 @@ void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, log_window* game_log, WINDOW
                 print_buffer_to_windows(lc, rc, tty, b);
                 break;
             case 10: //Enter key only works like this
-                if (b->cont[b->cursor]->is_word) {
+                if (b->cont[b->cursor]->is_word && !(b->cont[b->cursor]->was_selected)) {
                     check_guess(b, game_log, attempts);
                     attempts--;
                     print_header(hdr, attempts);
@@ -110,7 +111,10 @@ int main(int argc, char** argv) {
     }
     cbreak();
     start_color();
+    init_pair(0, COLOR_WHITE, COLOR_BLACK);
     init_pair(1, COLOR_BLACK, COLOR_GREEN);
+    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(3, COLOR_RED, COLOR_BLACK);
     keypad(stdscr, TRUE);
     word_buffer* b = new_buf();
     buf_complexity(b, 4);

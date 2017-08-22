@@ -23,7 +23,7 @@ char* strings_5[] = {
 char* rand_string(int size) {
     char* s = malloc(size + 1);
     if (s) {
-        const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()|?/><.,{}[]~";
+        const char charset[] = "ABCDEF1234567890!@#$%^&*()|?/><.,{}[]~";
         if (size) {
             --size;
             for (size_t n = 0; n < size; n++) {
@@ -42,6 +42,7 @@ str* new_str(char* c, int is_word) {
     res->len = strlen(c);
     strcpy(res->s, c);
     res->is_word = is_word;
+    res->was_selected = 0;
     return res;
 }
 
@@ -124,16 +125,19 @@ void del_shuffled_strings(char** strings, int size) {
 void fill_buf(word_buffer* b, char** strings, int size, short complexity) {
     char** shuffled = shuffle_strings(strings, size);
     int cursor = 0;
+    char is_word = 0;
     while(b->length < BUF_LENGTH) {
         if (BUF_LENGTH - b->length < 5) {
             char* s = rand_string(BUF_LENGTH - b->length + 1);
             add_str_to_buf(b, s, 0);
             free(s);
         } else {
-            if ((cursor < size - 1) && (rand() % 5) == 0) {
+            if ((cursor < size - 1) && (rand() % 10) == 0 && !is_word) {
                 cursor++;
+                is_word = 1;
                 add_str_to_buf(b, shuffled[cursor], 1);
             } else {
+                is_word = 0;
                 char* s = rand_string(2 + (rand() % 5));
                 add_str_to_buf(b, s, 0);
                 free(s);
@@ -192,6 +196,9 @@ void buf_complexity(word_buffer* b, short complexity) {
     }
 }
 
+/**
+ * Prints currently hovered word to terminal as a hint
+ */
 void print_current_to_tty(word_buffer* b, WINDOW* win) {
     str* s = b->cont[b->cursor];
     wclear(win);
@@ -209,26 +216,25 @@ void print_current_to_tty(word_buffer* b, WINDOW* win) {
 void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len) {
     int cursor = 0;
     int string_cursor = 0;
-    int selected = (b->cursor == 0) ? 1 : 0;
-    if (selected) {
-        wattron(win, COLOR_PAIR(1));
-    }
     str* s = b->cont[cursor];
     for (int i = 0; i < b->length; i++) {
         if (i >= offset && i < offset + len) {
+            if (cursor == b->cursor) {
+                wattrset(win, COLOR_PAIR(1));
+            } else if (s->is_word) {
+                if (s->was_selected) {
+                    wattrset(win, COLOR_PAIR(3));
+                } else {
+                    wattrset(win, COLOR_PAIR(2));
+                }
+            } else {
+                wattrset(win, COLOR_PAIR(0));
+            }
             wprintw(win, "%c", s->s[string_cursor]);   
         }
         string_cursor++;
         if (string_cursor >= s->len) {
             if ((++cursor) > b->length) return;
-            if (cursor == b->cursor && !selected) {
-                selected = 1;
-                wattron(win, COLOR_PAIR(1));
-            }
-            if (cursor != b->cursor && selected) {
-                selected = 0;
-                wattroff(win, COLOR_PAIR(1));
-            }
             s = b->cont[cursor];
             string_cursor = 0;
         }
