@@ -26,6 +26,13 @@ void print_header_game_over(WINDOW* hdr) {
     wrefresh(hdr);
 }
 
+void print_header_win(WINDOW* hdr) {
+    wclear(hdr);
+    wprintw(hdr, "Entry accepted\n");
+    wprintw(hdr, "Press any button to continue\n");
+    wrefresh(hdr);
+}
+
 void print_row_hex_addresses(WINDOW* l, WINDOW* r) {
     int a = 100 * (rand() %  100);
     for (int i = 0; i < 16; i++) {
@@ -87,16 +94,22 @@ void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, log_window* game_log, WINDOW
                 break;
             case 10: //Enter key only works like this
                 if (b->cont[b->cursor]->is_word && !(b->cont[b->cursor]->was_selected)) {
-                    check_guess(b, game_log, attempts);
                     attempts--;
-                    print_header(hdr, attempts);
+                    if (check_guess(b, game_log, attempts)) {
+                        print_header_win(hdr);
+                        attempts = 0;
+                        ch = wgetch(tty);
+                        return;
+                    } else if (attempts == 0) {
+                        print_header_game_over(hdr);
+                        ch = wgetch(tty);
+                        return;
+                    } else {
+                        print_header(hdr, attempts);
+                    }
                 }
                 break;
         }
-        ch = wgetch(tty);
-    }
-    if (attempts == 0) {
-        print_header_game_over(hdr);
         ch = wgetch(tty);
     }
 }
