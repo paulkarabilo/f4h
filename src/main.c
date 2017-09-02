@@ -130,7 +130,11 @@ int main(int argc, char** argv) {
     init_pair(3, COLOR_RED, COLOR_BLACK);
     keypad(stdscr, TRUE);
     word_buffer* b = new_buf();
-    buf_complexity(b, 4);
+    int complexity = 4;
+    if (argc == 2 && (strcmp(argv[1], "--advanced") == 0)) {
+        complexity = 5;
+    }
+    buf_complexity(b, complexity);
     WINDOW* hdr = new_window(5, 80, 0, 0);
     WINDOW* l = new_window(16, 6, 6, 0);
     WINDOW* r = new_window(16, 6, 6, 21);
