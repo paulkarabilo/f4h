@@ -51,13 +51,15 @@ void del_str(str* res) {
     free(res);
 }
 
-word_buffer* new_buf() {
-    word_buffer* res = malloc(sizeof(word_buffer));
-    res->size = 0;
-    res->cont = malloc(sizeof(str*));
-    res->length = 0;
-    res->cursor = 0;
-    return res;
+word_buffer* new_buf(int lh, int  lw, int ly, int lx, int rh, int rw, int ry, int rx) {
+    word_buffer* wb = malloc(sizeof(word_buffer));
+    wb->size = 0;
+    wb->cont = malloc(sizeof(str*));
+    wb->length = 0;
+    wb->cursor = 0;
+    wb->lc = new_window(lh, lw, ly, lx);
+    wb->rc = new_window(rh, rw, ry, rx);
+    return wb;
 }
 
 /*
@@ -84,6 +86,8 @@ void del_buf(word_buffer* buf) {
         del_str(buf->target);
     }
     free(buf->cont);
+    del_window(buf->rc);
+    del_window(buf->lc);
     free(buf);
 }
 
@@ -214,6 +218,7 @@ void print_current_to_tty(word_buffer* b, WINDOW* win) {
  * to ncurses window
  */
 void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len) {
+    wclear(win);
     int cursor = 0;
     int string_cursor = 0;
     str* s = b->cont[cursor];
@@ -240,4 +245,11 @@ void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len) {
         }
     }
     wrefresh(win);
+}
+
+void print_buf_to_left(word_buffer* b, int offset, int len) {
+    print_buf_to_win(b, b->lc, offset, len);
+}
+void print_buf_to_right(word_buffer* b, int offset, int len) {
+    print_buf_to_win(b, b->rc, offset, len);
 }

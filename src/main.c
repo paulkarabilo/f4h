@@ -20,12 +20,10 @@ void print_row_hex_addresses(WINDOW* l, WINDOW* r) {
     wrefresh(r);
 }
 
-void print_buffer_to_windows(WINDOW* lc, WINDOW* rc, WINDOW* tty, word_buffer *b) {
-    wclear(lc);
-    wclear(rc);
+void print_buffer_to_windows(word_buffer *b, WINDOW* tty) {
     print_current_to_tty(b, tty);
-    print_buf_to_win(b, lc, 0, 192);
-    print_buf_to_win(b, rc, 192, 192);
+    print_buf_to_left(b, 0, 192);
+    print_buf_to_right(b, 192, 192);
 }
 
 int check_guess(word_buffer* b, log_window *l, int attempts) {
@@ -46,7 +44,7 @@ int check_guess(word_buffer* b, log_window *l, int attempts) {
     }
 }
 
-void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, log_window* game_log, hdr_window* hdr, word_buffer* b) {
+void main_loop(WINDOW* tty, log_window* game_log, hdr_window* hdr, word_buffer* b) {
     int attempts = 4;
     print_hdr(hdr, attempts);
     int ch = wgetch(tty);
@@ -54,19 +52,19 @@ void main_loop(WINDOW* lc, WINDOW* rc, WINDOW* tty, log_window* game_log, hdr_wi
         switch(ch) {
             case KEY_LEFT:
                 navigate_buffer(b, -1);
-                print_buffer_to_windows(lc, rc, tty, b);
+                print_buffer_to_windows(b, tty);
                 break;
             case KEY_RIGHT:
                 navigate_buffer(b, 1);
-                print_buffer_to_windows(lc, rc, tty, b);
+                print_buffer_to_windows(b, tty);
                 break;
             case KEY_UP:
                 navigate_buffer_char(b, -14);
-                print_buffer_to_windows(lc, rc, tty, b);
+                print_buffer_to_windows(b, tty);
                 break;
             case KEY_DOWN:
                 navigate_buffer_char(b, 14);
-                print_buffer_to_windows(lc, rc, tty, b);
+                print_buffer_to_windows(b, tty);
                 break;
             case 10: //Enter key only works like this
                 if (b->cont[b->cursor]->is_word && !(b->cont[b->cursor]->was_selected)) {
@@ -105,7 +103,7 @@ int main(int argc, char** argv) {
     init_pair(2, COLOR_YELLOW, COLOR_BLACK);
     init_pair(3, COLOR_RED, COLOR_BLACK);
     keypad(stdscr, TRUE);
-    word_buffer* b = new_buf();
+    word_buffer* b = new_buf(16, 12, 6, 7, 16, 12, 6, 28);
     int complexity = 4;
     if (argc == 2 && (strcmp(argv[1], "--advanced") == 0)) {
         complexity = 5;
@@ -113,24 +111,19 @@ int main(int argc, char** argv) {
     buf_complexity(b, complexity);
     WINDOW* l = new_window(16, 6, 6, 0);
     WINDOW* r = new_window(16, 6, 6, 21);
-    WINDOW* lc = new_window(16, 12, 6, 7);
-    WINDOW* rc = new_window(16, 12, 6, 28);
     WINDOW* tty = new_window(1, 10, 21, 41);
     hdr_window* hdr = new_hdr(5, 80, 0, 0);
     log_window* game_log = new_log(15, 12, 6, 41);
     keypad(tty, TRUE);
     print_row_hex_addresses(l, r);
-    print_buffer_to_windows(lc, rc, tty, b);
-    main_loop(lc, rc, tty, game_log, hdr, b);
+    print_buffer_to_windows(b, tty);
+    main_loop(tty, game_log, hdr, b);
     delete_log(game_log);
     del_window(tty);
-    del_window(rc);
-    del_window(lc);
     del_window(r);
     del_window(l);
     delete_hdr(hdr);
-    
-    endwin();
     del_buf(b);
+    endwin();
     return (EXIT_SUCCESS);
 }
