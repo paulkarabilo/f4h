@@ -165,7 +165,7 @@ void clamp_buffer_cursor(word_buffer* b) {
 /**
  * Simple buffer navigation, 1 word forward or backward
  */
-void navigate_buffer(word_buffer* b, char dir) {
+void navigate_buffer_word(word_buffer* b, char dir) {
     b->cursor = b->cursor + dir;
     clamp_buffer_cursor(b);
 }

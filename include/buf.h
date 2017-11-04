@@ -35,7 +35,7 @@ void print_current_to_tty(word_buffer* b, tty_window* tty);
 void buf_complexity(word_buffer* b, short complexity);
 word_buffer* new_buf(int lh, int  lw, int ly, int lx, int rh, int rw, int ry, int rx);
 void del_buf(word_buffer* b);
-void navigate_buffer(word_buffer* b, char dir);
+void navigate_buffer_word(word_buffer* b, char dir);
 void navigate_buffer_char(word_buffer* b, char dir);
 int get_str_diff(str* s1, str* s2);
 

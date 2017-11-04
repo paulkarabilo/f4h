@@ -40,11 +40,11 @@ void main_loop(tty_window* tty, log_window* game_log, hdr_window* hdr, word_buff
     while (ch != 27 && attempts > 0) {
         switch(ch) {
             case KEY_LEFT:
-                navigate_buffer(b, -1);
+                navigate_buffer_word(b, -1);
                 print_buffer_to_windows(b, tty);
                 break;
             case KEY_RIGHT:
-                navigate_buffer(b, 1);
+                navigate_buffer_word(b, 1);
                 print_buffer_to_windows(b, tty);
                 break;
             case KEY_UP:
