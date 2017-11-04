@@ -1,11 +1,11 @@
-#ifndef HDR_H
-#define HDR_H
+#ifndef F4H_HDR_H
+#define F4H_HDR_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "windows.h"
+#include "win.h"
 
 typedef struct hdr_window {
     WINDOW* win;

@@ -1,8 +1,9 @@
-#ifndef BUF_H
-#define BUF_H
+#ifndef F4H_BUF_H
+#define F4H_BUF_H
 
 #include <ncurses.h>
-#include "windows.h"
+#include "win.h"
+#include "tty.h"
 
 #define BUF_LENGTH 384
 
@@ -30,7 +31,7 @@ typedef struct {
 void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len);
 void print_buf_to_left(word_buffer* b, int offset, int len);
 void print_buf_to_right(word_buffer* b, int offset, int len);
-void print_current_to_tty(word_buffer* b, WINDOW* win);
+void print_current_to_tty(word_buffer* b, tty_window* tty);
 void buf_complexity(word_buffer* b, short complexity);
 word_buffer* new_buf(int lh, int  lw, int ly, int lx, int rh, int rw, int ry, int rx);
 void del_buf(word_buffer* b);

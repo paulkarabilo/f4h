@@ -1,4 +1,5 @@
 #include "../include/buf.h"
+#include "../include/tty.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -203,13 +204,13 @@ void buf_complexity(word_buffer* b, short complexity) {
 /**
  * Prints currently hovered word to terminal as a hint
  */
-void print_current_to_tty(word_buffer* b, WINDOW* win) {
+void print_current_to_tty(word_buffer* b, tty_window* tty) {
     str* s = b->cont[b->cursor];
-    wclear(win);
+    wclear(tty->win);
     if (s->is_word) {
-        wprintw(win, "> %s", s->s);
+        wprintw(tty->win, "> %s", s->s);
     } else {
-        wprintw(win, "> ");
+        wprintw(tty->win, "> ");
     }
 }
 
@@ -227,11 +228,7 @@ void print_buf_to_win(word_buffer* b, WINDOW* win, int offset, int len) {
             if (cursor == b->cursor) {
                 wattrset(win, COLOR_PAIR(1));
             } else if (s->is_word) {
-                if (s->was_selected) {
-                    wattrset(win, COLOR_PAIR(3));
-                } else {
-                    wattrset(win, COLOR_PAIR(2));
-                }
+                wattrset(win, COLOR_PAIR(s->was_selected ? 3 : 2));
             } else {
                 wattrset(win, COLOR_PAIR(0));
             }

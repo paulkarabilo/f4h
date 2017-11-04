@@ -1,11 +1,11 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef F4H_LOG_H
+#define F4H_LOG_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "windows.h"
+#include "win.h"
 
 typedef struct log_window {
     WINDOW* win;

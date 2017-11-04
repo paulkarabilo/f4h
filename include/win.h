@@ -1,5 +1,5 @@
-#ifndef WINDOWS_H
-#define WINDOWS_H
+#ifndef F4H_WIN_H
+#define F4H_WIN_H
 
 
 #include <ncurses.h>

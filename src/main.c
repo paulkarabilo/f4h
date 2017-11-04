@@ -3,24 +3,13 @@
 #include <ncurses.h>
 #include <time.h>
 #include <string.h>
-#include "../include/windows.h"
-#include "../include/buf.h"
 #include "../include/log.h"
 #include "../include/hdr.h"
+#include "../include/addr.h"
+#include "../include/tty.h"
+#include "../include/buf.h"
 
-
-void print_row_hex_addresses(WINDOW* l, WINDOW* r) {
-    int a = 100 * (rand() %  100);
-    for (int i = 0; i < 16; i++) {
-        wprintw(l, "0X%04X", a);
-        wprintw(r, "0X%04X", a + 12 * 16);
-        a += 12;
-    }
-    wrefresh(l);
-    wrefresh(r);
-}
-
-void print_buffer_to_windows(word_buffer *b, WINDOW* tty) {
+void print_buffer_to_windows(word_buffer *b, tty_window* tty) {
     print_current_to_tty(b, tty);
     print_buf_to_left(b, 0, 192);
     print_buf_to_right(b, 192, 192);
@@ -44,10 +33,10 @@ int check_guess(word_buffer* b, log_window *l, int attempts) {
     }
 }
 
-void main_loop(WINDOW* tty, log_window* game_log, hdr_window* hdr, word_buffer* b) {
+void main_loop(tty_window* tty, log_window* game_log, hdr_window* hdr, word_buffer* b) {
     int attempts = 4;
     print_hdr(hdr, attempts);
-    int ch = wgetch(tty);
+    int ch = get_tty(tty);
     while (ch != 27 && attempts > 0) {
         switch(ch) {
             case KEY_LEFT:
@@ -72,11 +61,11 @@ void main_loop(WINDOW* tty, log_window* game_log, hdr_window* hdr, word_buffer* 
                     if (check_guess(b, game_log, attempts)) {
                         print_hdr_win(hdr);
                         attempts = 0;
-                        ch = wgetch(tty);
+                        ch = get_tty(tty);
                         return;
                     } else if (attempts == 0) {
                         print_hdr_game_over(hdr);
-                        ch = wgetch(tty);
+                        ch = get_tty(tty);
                         return;
                     } else {
                         print_hdr(hdr, attempts);
@@ -84,7 +73,7 @@ void main_loop(WINDOW* tty, log_window* game_log, hdr_window* hdr, word_buffer* 
                 }
                 break;
         }
-        ch = wgetch(tty);
+        ch = get_tty(tty);
     }
 }
 
@@ -109,19 +98,15 @@ int main(int argc, char** argv) {
         complexity = 5;
     }
     buf_complexity(b, complexity);
-    WINDOW* l = new_window(16, 6, 6, 0);
-    WINDOW* r = new_window(16, 6, 6, 21);
-    WINDOW* tty = new_window(1, 10, 21, 41);
+    addr_windows* aw = new_addr(16, 6, 6, 0, 16, 6, 6, 21);
+    tty_window* tty = new_tty(1, 10, 21, 41);
     hdr_window* hdr = new_hdr(5, 80, 0, 0);
     log_window* game_log = new_log(15, 12, 6, 41);
-    keypad(tty, TRUE);
-    print_row_hex_addresses(l, r);
     print_buffer_to_windows(b, tty);
     main_loop(tty, game_log, hdr, b);
     delete_log(game_log);
-    del_window(tty);
-    del_window(r);
-    del_window(l);
+    del_tty(tty);
+    del_addr(aw);
     delete_hdr(hdr);
     del_buf(b);
     endwin();
